@@ -1,44 +1,44 @@
 #!/bin/bash
 
-# 最大线程数（可根据需要调整）
+# Maximum number of threads (can be adjusted as needed)
 MAX_THREADS=40
-# 使用绝对路径获取当前脚本所在目录
+# Get the absolute path of the directory where the current script is located
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
-# 输入目录（所有被试数据所在目录）
+# Input directory (the directory where all subject data is stored)
 INPUT_DIR="/media/shulab/Getea/zhe2/NC/sorted"
-# 输出目录（结果保存路径）
+# Output directory (the path to save the results)
 OUTPUT_DIR="/media/shulab/Getea/zhe2/NC/results"
-# 图谱文件路径（根据实际情况修改）
+# Path to the atlas file (modify according to the actual situation)
 ATLAS="$SCRIPT_DIR/atlas/desikan-killiany_1mm.nii.gz"
 
-# 创建输出目录
+# Create the output directory
 mkdir -p "$OUTPUT_DIR"
 
-# 初始化线程计数器
+# Initialize the thread counter
 THREAD_COUNT=0
 
-# 遍历所有被试文件夹（排除当前目录本身）
+# Iterate through all subject folders (excluding the current directory itself)
 find "$INPUT_DIR" -mindepth 1 -maxdepth 1 -type d -name '*' | while read -r subject_folder; do
     subject_id=$(basename "$subject_folder")
     echo "Processing subject: $subject_id"
 
-    # 生成完整的命令行
+    # Generate the full command line
     cmd="$SCRIPT_DIR/t1_preprocess.sh '$subject_folder' '$OUTPUT_DIR/$subject_id' '$ATLAS'"
     echo "Executing command: $cmd"
 
-    # 调用预处理脚本
+    # Call the preprocessing script
     eval "$cmd" &
 
     ((THREAD_COUNT++))
 
-    # 控制并发线程数
+    # Control the number of concurrent threads
     if [ "$THREAD_COUNT" -ge "$MAX_THREADS" ]; then
         wait -n
         ((THREAD_COUNT--))
     fi
 done
 
-# 等待所有任务完成
+# Wait for all tasks to complete
 wait
 
-echo "All subjects processed."
+echo "All subjects processed."    
