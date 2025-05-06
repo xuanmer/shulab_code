@@ -5,9 +5,11 @@ MAX_THREADS=40
 # Get the absolute path of the directory where the current script is located
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 # Input directory (the directory where all subject data is stored)
-INPUT_DIR="/media/shulab/Getea/zhe2/NC/sorted"
+# INPUT_DIR="/media/shulab/Getea/zhe2/NC/sorted"
+INPUT_DIR="data path"
 # Output directory (the path to save the results)
-OUTPUT_DIR="/media/shulab/Getea/zhe2/NC/results"
+# OUTPUT_DIR="/media/shulab/Getea/zhe2/NC/results"
+Output_DIR="output path"
 # Path to the atlas file (modify according to the actual situation)
 ATLAS="$SCRIPT_DIR/atlas/desikan-killiany_1mm.nii.gz"
 
