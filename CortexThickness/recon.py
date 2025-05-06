@@ -73,6 +73,8 @@ def main(path_items, max_threads=85):
 
 # Set the base path and start the processing
 # base_path = '/home/shulab/zhe2/NC/sorted'
-# main(base_path,78)
+
+base_path = 'data path'
+main(base_path,78)
 
 # %%
