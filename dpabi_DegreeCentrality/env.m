@@ -1,0 +1,1 @@
+setenv('FSLDIR', '/usr/local/fsl')
