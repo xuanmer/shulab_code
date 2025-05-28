@@ -27,23 +27,24 @@ def check_completion(ses_path):
 def process_ses(ses_path):
     """Process the given session (ses-*)."""
     if not check_completion(ses_path):
-        # 清理会话目录下的残留fs文件夹（如果存在）
+        # 清理残留的fs文件夹
         fs_path = ses_path / 'fs'
         if fs_path.exists():
             shutil.rmtree(fs_path)
         
-        # 运行recon-all，输入为当前会话的anat数据，输出到会话目录下的fs
+        # 构造包含通配符的命令字符串（关键修改）
+        anat_dir = ses_path / 'anat'
+        cmd = (
+            f"recon-all -all "
+            f"-i {anat_dir}/*.nii.gz "  # 通配符匹配anat目录下所有.nii.gz文件
+            f"-sd {ses_path} -s fs"
+        )
+
         try:
             print_colored(f"Starting recon-all for {ses_path}...", '32')
-            cmd = [
-                'recon-all', 
-                '-all', 
-                '-s', 'fs', 
-                '-i', str(ses_path / 'anat' / 'data.nii.gz'),  # 会话级anat数据
-                '-sd', str(ses_path)  # 输出根目录为当前会话目录
-            ]
-            print(' '.join(cmd))  # 打印命令便于调试
-            subprocess.run(cmd, check=True)
+            print(f"执行命令: {cmd}")  # 打印完整命令便于调试
+            # 启用shell=True以展开通配符
+            subprocess.run(cmd, shell=True, check=True)
             print_colored(f"Recon-all finished for {ses_path}.", '32')
         except subprocess.CalledProcessError as e:
             print_colored(f"[ERROR] Recon-all failed for {ses_path}: {e}", '31')
@@ -54,21 +55,18 @@ def main(base_path, max_threads=85):
     """Main function to process all incomplete sessions in parallel."""
     ses_items = []
     for sub_dir in Path(base_path).iterdir():
-        # 关键调整：匹配sub_开头的被试目录（原代码是startswith('sub-')）
-        if sub_dir.is_dir() and sub_dir.name.startswith('sub_'):  
+        if sub_dir.is_dir() and sub_dir.name.startswith('sub_'):  # 适配你的sub_命名
             for ses_dir in sub_dir.iterdir():
-                if ses_dir.is_dir() and ses_dir.name.startswith('ses-'):  # 会话目录仍匹配ses-开头
+                if ses_dir.is_dir() and ses_dir.name.startswith('ses-'):
                     ses_items.append(ses_dir)
     ses_items.sort()
 
-    # 筛选未完成的会话
     incomplete_ses = [ses for ses in ses_items if not check_completion(ses)]
 
     if not incomplete_ses:
         print_colored("No incomplete recon-all processes found.", '33')
         return
 
-    # 多线程并行处理会话
     with ThreadPoolExecutor(max_workers=max_threads) as executor:
         futures = {executor.submit(process_ses, ses): ses for ses in incomplete_ses}
         for future in as_completed(futures):
@@ -82,6 +80,6 @@ def main(base_path, max_threads=85):
 
 
 # 示例运行（根据实际路径调整）
-base_path = '/path/to/data'  # 指向你的data目录
+base_path = '/home/shulab/bty/ct_test/data'
 main(base_path, 2)
     
