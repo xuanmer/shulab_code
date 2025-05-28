@@ -36,7 +36,7 @@ def process_ses(ses_path):
         anat_dir = ses_path / 'anat'
         cmd = (
             f"recon-all -all "
-            f"-i {anat_dir}/*.nii.gz "  # 通配符匹配anat目录下所有.nii.gz文件
+            f"-i {anat_dir}/*.nii* "  # 需修改
             f"-sd {ses_path} -s fs"
         )
 
@@ -55,7 +55,7 @@ def main(base_path, max_threads=85):
     """Main function to process all incomplete sessions in parallel."""
     ses_items = []
     for sub_dir in Path(base_path).iterdir():
-        if sub_dir.is_dir() and sub_dir.name.startswith('sub_'):  # 适配你的sub_命名
+        if sub_dir.is_dir() and sub_dir.name.startswith('sub_'):  # 适配你的sub_命名，需修改
             for ses_dir in sub_dir.iterdir():
                 if ses_dir.is_dir() and ses_dir.name.startswith('ses-'):
                     ses_items.append(ses_dir)
@@ -79,7 +79,7 @@ def main(base_path, max_threads=85):
     print_colored('#######################\nDone\n##############################', '32')
 
 
-# 示例运行（根据实际路径调整）
-base_path = '/home/shulab/bty/ct_test/data'
+# 示例运行（根据实际路径调整），需修改
+base_path = '/path/to/data'
 main(base_path, 2)
     
