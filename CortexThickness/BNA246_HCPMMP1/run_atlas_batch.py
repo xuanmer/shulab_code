@@ -70,12 +70,12 @@ def process_subject(sub_id):
     cmd_bna246_lh_stats = [
         "mris_anatomical_stats", "-mgz", "-cortex", f"{label_dir}/lh.cortex.label",
         "-f", f"{stats_dir}/lh.BN_Atlas.stats", "-b",
-        "-a", f"{label_dir}/lh.BN_Atlas.annot", "-c", BNA246_LUT, "FreeSurfer", "lh", "white"
+        "-a", f"{label_dir}/lh.BN_Atlas.annot", "-c", BNA246_LUT, f"{sub_id}/FreeSurfer", "lh", "white"
     ]
     cmd_bna246_rh_stats = [
         "mris_anatomical_stats", "-mgz", "-cortex", f"{label_dir}/rh.cortex.label",
         "-f", f"{stats_dir}/rh.BN_Atlas.stats", "-b",
-        "-a", f"{label_dir}/rh.BN_Atlas.annot", "-c", BNA246_LUT, "FreeSurfer", "rh", "white"
+        "-a", f"{label_dir}/rh.BN_Atlas.annot", "-c", BNA246_LUT, f"{sub_id}/FreeSurfer", "rh", "white"
     ]
     cmd_bna246_vol_stats = [
         "mri_segstats",
